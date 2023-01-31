@@ -1,6 +1,6 @@
-# Kafka Spring Boot 
+# Kafka Spring Boot Retryable Topics Demo
 
-Spring Boot application demonstrating Kafka retry with Spring @Retryable topics
+Spring Boot application demonstrating Kafka retry with Spring @Retryable topics.
 
 If an event is received by an application that is not ready to process it, it can be sent to a retry topic ensuring the original topic is not blocked.  If this retry fails, it will be sent to a further retry topic, and so on until the event either completes processing or is discarded.  This ensures that each retry topic remains unblocked.  The cost of this is the loss of guaranteed ordering, as while the event is being retried an event received after it may be processed successfully.
 
