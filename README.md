@@ -1,4 +1,4 @@
-# Kafka Spring Boot Retryable Topics Demo
+# Kafka Spring Boot Retry Topics Demo
 
 Spring Boot application demonstrating Kafka retry with Spring @Retryable topics.
 
