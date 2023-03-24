@@ -22,7 +22,7 @@ public class UpdateItemConsumerTest {
     @BeforeEach
     public void setUp() {
         serviceMock = mock(ItemService.class);
-        consumer = new UpdateItemConsumer(serviceMock, 10L, 2L, 100L, 3L, false);
+        consumer = new UpdateItemConsumer(serviceMock);
     }
 
     /**

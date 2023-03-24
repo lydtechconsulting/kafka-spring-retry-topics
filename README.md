@@ -17,12 +17,12 @@ This application demonstrates this retry pattern using a `create-item` event tha
 The retry topics are configured using Spring's `@Retryable` annotation.  
 ```
 @RetryableTopic(
-        attempts = "#{updateItemConsumer.maxRetryAttempts}",
-        autoCreateTopics = "#{updateItemConsumer.autoCreateRetryTopics}",
-        backoff = @Backoff(delayExpression = "#{updateItemConsumer.retryIntervalMilliseconds}", multiplierExpression = "#{updateItemConsumer.retryBackoffMultiplier}"),
+        attempts = "#{'${demo.retry.maxRetryAttempts}'}",
+        autoCreateTopics = "#{'${demo.retry.autoCreateRetryTopics}'}",
+        backoff = @Backoff(delayExpression = "#{'${demo.retry.retryIntervalMilliseconds}'}", multiplierExpression = "#{'${demo.retry.retryBackoffMultiplier}'}"),
         fixedDelayTopicStrategy = FixedDelayStrategy.MULTIPLE_TOPICS,
         include = {RetryableMessagingException.class},
-        timeout = "#{updateItemConsumer.maxRetryDurationMilliseconds}",
+        timeout = "#{'${demo.retry.maxRetryDurationMilliseconds}'}",
         topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE)
 ```
 
@@ -38,6 +38,9 @@ The following configuration parameters defined in the `src/main/resources/applic
 Whichever of the two limits `maxRetryDurationMilliseconds` and `maxRetryAttempts` is reached first determines when no more retries will take place, and the event is sent to the dead letter topic.
 
 ## Build
+
+Build with Java 17.
+
 ```
 mvn clean install
 ```

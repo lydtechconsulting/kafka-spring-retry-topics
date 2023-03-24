@@ -19,7 +19,7 @@ public class CreateItemConsumer {
     final AtomicInteger counter = new AtomicInteger();
     final ItemService itemService;
 
-    @KafkaListener(topics = "create-item", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "#{'${demo.topics.itemCreateTopic}'}", containerFactory = "kafkaListenerContainerFactory")
     public void listen(@Payload final String payload) {
         counter.getAndIncrement();
         log.info("Create Item Consumer: Received message [" +counter.get()+ "] - payload: " + payload);

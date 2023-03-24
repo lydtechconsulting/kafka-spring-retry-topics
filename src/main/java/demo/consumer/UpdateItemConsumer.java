@@ -4,9 +4,8 @@ import demo.event.UpdateItem;
 import demo.exception.RetryableMessagingException;
 import demo.mapper.JsonMapper;
 import demo.service.ItemService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
@@ -19,39 +18,21 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class UpdateItemConsumer {
 
     private final ItemService itemService;
-    public final String retryIntervalMilliseconds;
-    public final String retryBackoffMultiplier;
-    public final String maxRetryDurationMilliseconds;
-    public final String maxRetryAttempts;
-    public final String autoCreateRetryTopics;
-
-    public UpdateItemConsumer(@Autowired ItemService itemService,
-                              @Value("${demo.retry.retryIntervalMilliseconds}") Long retryIntervalMilliseconds,
-                              @Value("${demo.retry.retryBackoffMultiplier}") Long retryBackoffMultiplier,
-                              @Value("${demo.retry.maxRetryDurationMilliseconds}") Long maxRetryDurationMilliseconds,
-                              @Value("${demo.retry.maxRetryAttempts}") Long maxRetryAttempts,
-                              @Value("${demo.retry.autoCreateRetryTopics}") Boolean autoCreateRetryTopics) {
-        this.itemService = itemService;
-        this.retryIntervalMilliseconds = String.valueOf(retryIntervalMilliseconds);
-        this.retryBackoffMultiplier = String.valueOf(retryBackoffMultiplier);
-        this.maxRetryDurationMilliseconds = String.valueOf(maxRetryDurationMilliseconds);
-        this.maxRetryAttempts = String.valueOf(maxRetryAttempts);
-        this.autoCreateRetryTopics = String.valueOf(autoCreateRetryTopics);
-    }
 
     @RetryableTopic(
-            attempts = "#{updateItemConsumer.maxRetryAttempts}",
-            autoCreateTopics = "#{updateItemConsumer.autoCreateRetryTopics}",
-            backoff = @Backoff(delayExpression = "#{updateItemConsumer.retryIntervalMilliseconds}", multiplierExpression = "#{updateItemConsumer.retryBackoffMultiplier}"),
+            attempts = "#{'${demo.retry.maxRetryAttempts}'}",
+            autoCreateTopics = "#{'${demo.retry.autoCreateRetryTopics}'}",
+            backoff = @Backoff(delayExpression = "#{'${demo.retry.retryIntervalMilliseconds}'}", multiplierExpression = "#{'${demo.retry.retryBackoffMultiplier}'}"),
             fixedDelayTopicStrategy = FixedDelayStrategy.MULTIPLE_TOPICS,
             include = {RetryableMessagingException.class},
-            timeout = "#{updateItemConsumer.maxRetryDurationMilliseconds}",
+            timeout = "#{'${demo.retry.maxRetryDurationMilliseconds}'}",
             topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE)
-    @KafkaListener(topics = "update-item", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "#{'${demo.topics.itemUpdateTopic}'}", containerFactory = "kafkaListenerContainerFactory")
     public void listen(@Payload final String payload) {
         log.info("Update Item Consumer: Received message with payload: " + payload);
         try {
