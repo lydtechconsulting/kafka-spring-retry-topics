@@ -12,6 +12,8 @@ While the application demonstrates using multiple retry topics, one for each ret
 
 This application demonstrates this retry pattern using a `create-item` event that creates an item in the database, and is updated with an `update-item` event.  If the `update-item` event is received before the `create-item` event it may be required to delay and retry this update after a period of time to allow for the corresponding `create-item` event to arrive and be processed.  When related events are originating in bulk from external systems it may well be the case that such events arrive out of order by the time they hit a downstream service.  This pattern therefore caters for such a scenario as the `update-item` event can be safely retried until the item is eventually created by the `create-item` event, at which point the update can be applied.  
 
+This repo accompanies the article [Kafka Consumer Non-Blocking Retry: Spring Retry Topics](https://www.lydtechconsulting.com/blog-kafka-spring-retry-topics.html).
+
 ## Configuration
 
 The retry topics are configured using Spring's `@Retryable` annotation.  
